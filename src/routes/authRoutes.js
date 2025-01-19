@@ -3,7 +3,7 @@ const router = express.Router()
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
+require('dotenv').config()
 // TODO: 1.register (POST API) the user
 router.post("/register", async(req, res)=> {
     try{
@@ -37,8 +37,44 @@ router.post("/login", async(req, res)=> {
 
     try{
 
+        // postman, isomania, thunderclient
+        // email, password login
+        const {email, password} = req.body;
+
+        // a. check if the user is already exists
+        const user = await User.findOne({email})
+        if (!user){
+            return res.status(401).json({message: "Invalid credentials"})
+        }
+        // b. compare the password
+        const isMatch = await bcrypt.compare(password, user.password)
+        if (!isMatch){
+            return res.status(401).json({message: "Invalid credentials"})
+        }
+
+        // c. generate the JWT token
+        const token = jwt.sign(
+            {userId: user._id, role: user.role},
+            process.env.JWT_SECRET,
+            {expiresIn: '1d'}
+        )
+
+        // d. send the user information along with the jwt token
+
+        return res.json({
+            message: "Logged in successfully",
+            token, 
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        })
+
     }catch(error){
-        
+        console.log(error)
+        return res.status(500).json({message: "Server error"})
     }
 })
 
