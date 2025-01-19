@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const cors = require("cors");
 const productRoutes = require('./routes/productRoutes')
 const homepageRoutes = require('./routes/homepageRoutes')
+const authRoutes = require('./routes/authRoutes');
 require('dotenv').config()
 const app = express();
 app.use(morgan("dev"));
@@ -21,6 +22,9 @@ app.get("/", (req, res) => {
 app.use("/api/products", productRoutes)
 // homepage route
 app.use("/api/homepage", homepageRoutes)
+// auth route
+app.use("/api/auth", authRoutes)
+
 app.listen(PORT, () => {
   console.log(`Server listening to the port ${PORT}.`);
 });
