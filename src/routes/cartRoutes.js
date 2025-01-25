@@ -2,9 +2,9 @@ const express = require('express')
 const router = express.Router()
 const Cart = require('../models/cart')
 const Product = require('../models/product')
-
+const authMiddleware = require('../middlewares/authMiddleware')
 // Get the cart information
-router.get("/", async(req, res)=> {
+router.get("/", authMiddleware, async(req, res)=> {
 
     try {
         const userId = req.user.userId; //JWT
@@ -22,7 +22,7 @@ router.get("/", async(req, res)=> {
 
 
 // POST CREATE the cart information
-router.post("/", async(req, res)=> {
+router.post("/", authMiddleware,async(req, res)=> {
     try {
         // user verification
         const userId = req.user.userId;
@@ -54,7 +54,7 @@ router.post("/", async(req, res)=> {
     }
 })
 // delete the cart information from the UI
-router.delete("/:productId", async(req, res)=> {
+router.delete("/:productId",authMiddleware, async(req, res)=> {
     try {
         const userId = req.user.userId;
         const {productId} = req.params;
